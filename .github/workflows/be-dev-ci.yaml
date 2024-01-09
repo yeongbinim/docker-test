@@ -1,0 +1,10 @@
+name: BE_DEV_CI
+
+on:
+  push:
+    branches: main
+    paths: "BE/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
