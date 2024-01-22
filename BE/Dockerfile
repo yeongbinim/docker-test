@@ -10,4 +10,4 @@ COPY ./ ./
 
 RUN npm run build
 
-CMD ["npm", "dist/main"]
+CMD ["npm", "start:prod"]
