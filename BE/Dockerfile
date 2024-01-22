@@ -8,4 +8,6 @@ RUN npm ci
 
 COPY ./ ./
 
-CMD ["npm", "run", "start"]
+RUN npm run build
+
+CMD ["npm", "dist/main"]
