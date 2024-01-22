@@ -1,0 +1,16 @@
+name: BE_DEV_CI
+
+on:
+  pull_request:
+    branches: 'main'
+    paths: 'BE/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker Build and Push
+        run: |
+          docker build -t yeim/nest-test ./BE/
+          docker run yeim/nest-test npm test

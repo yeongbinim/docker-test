@@ -1,0 +1,29 @@
+name: BE_DEV_CD
+
+on:
+  push:
+    branches: main
+    paths: "BE/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker Build and Push
+        run: |
+          docker login --username "${{ secrets.DOCKER_USERNAME }}" --password "${{ secrets.DOCKER_PASSWORD }}"
+          docker build -t flipmate-registry.kr.ncr.ntruss.com/dev-image ./BE/
+          docker push flipmate-registry.kr.ncr.ntruss.com/dev-image:latest
+      - name: Deploy to NCP
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.NCP_HOST }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.NCP_PASSWORD }}
+          script: |
+            docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+            docker pull flipmate-registry.kr.ncr.ntruss.com/dev-image
+            docker stop dev-container || true
+            docker rm dev-container || true
+            docker run -d -p ${{secrets.EXTERNAL_PORT}}:${{secrets.INTERNAL_PORT}} --name dev-container flipmate-registry.kr.ncr.ntruss.com/dev-image
